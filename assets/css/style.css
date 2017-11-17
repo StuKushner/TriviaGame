@@ -1,0 +1,19 @@
+.question, .timer, #message {
+	font-weight: bold;
+}
+
+.container, #results {
+	margin: 0 auto;
+	text-align: center;
+}
+
+#startButton, #submitButton {
+	margin: 0 auto;
+	width: 50%;
+	text-align: center;
+}
+
+#message {
+	font-size: 30px;
+}
+

@@ -1,7 +1,4 @@
-var correct;
-var incorrect;
-var unanswered;
-var countdown = 30;
+var panel = $("#quiz-area");
 
 var quizQuestions = [
 {
@@ -30,61 +27,98 @@ var quizQuestions = [
 	correctAnswer: "Yellow"
 }];
 
-function timer() {
-	$(".timer").html("Time Remaining: " + countdown + " seconds.");
-	var timer = setInterval(clockTicking, 1000);
-	function clockTicking() {
-		if (countdown == 0) {
-			clearTimeout(timer);
-			alert("Time's Up!");
-			finalScreen();
-		} else if (countdown > 0) {
-			countdown--;
-			$(".timer").html("Time Remaining: " + countdown + " seconds.");
+var timer;
+
+var game = {
+	correct: 0,
+	incorrect: 0,
+	counter: 30,
+
+	countdown: function() {
+		game.counter--;
+		$("#counter-number").html(game.counter);
+		if (game.counter === 0) {
+			console.log("TIME'S UP!!");
+			game.done();
 		}
-	}
-}
+	},
 
-function game() {
-	timer();
+	start: function() {
+		timer = setInterval(game.countdown, 1000);
 
-	for (var i = 0; i < quizQuestions.length; i++) {
-		$("#quiz").append("<p><strong>" + quizQuestions[i].question + "</strong></p>");
-		for (var j = 0; j < quizQuestions[i].choices.length; j++) {
-			$("#quiz").append(' <input type="radio" name="val'+i+'" value="'+i+'"> ' + quizQuestions[i].choices[j]);	
+		$("#sub-wrapper").prepend("<h2>Time Remaining: <span id='counter-number'>30</span> Seconds</h2>");
+		$("#start").remove();
+
+		for (var i = 0; i < quizQuestions.length; i++) {
+			panel.append("<h2>" + quizQuestions[i].question + "</h2>");
+			for (var j = 0; j < quizQuestions[i].choices.length; j++) {
+				panel.append("<input type='radio' name='question-" + i 
+					+ "' value='" + quizQuestions[i].choices[j] + "''>" + quizQuestions[i].choices[j]);
 			}
 		}
-	
-	$("#submitButton").click(function() {
-		correct = 0;
-		incorrect = 0;
-		unanswered = 5;
-		$("input[type='radio']:checked").each(function() {
-			//If the value of the clicked radio button is the same as the correct answer, the correct counter increments
-			//and the unanswered counter decrements. If the value isn't the same, the incorrect counter increments and the
-			//unanswered counter decrements
-		})
-		clearTimeout(timer);
-		finalScreen();
-	});
-}
 
-function finalScreen() {
-	$(".container").hide();
-	clearTimeout(timer);
-	$("#correct").html("Correct Answers: " + correct);
-	$("#incorrect").html("Incorrect Answers: " + incorrect);
-	$("#unanswered").html("Unanswered Questions: " + unanswered);
-	$("#message").html("Press Reload To Play Again!");
-}
+		panel.append("<button id='done'>Done</button>");
+	},
 
-$(document).ready(function(){
-	$(".container").hide();
-	$("#startButton").click(function(){
-		$(".container").fadeIn();
-		$("#startButton").hide();
-		game();
-		$(this).hide();
-	})
+	done: function() {
+		$.each($("input[name='question-0']:checked"), function() {
+			if ($(this).val() === quizQuestions[0].correctAnswer) {
+				game.correct++;
+			} else {
+				game.incorrect++;
+			}
+		});
 
+		$.each($("input[name='question-1']:checked"), function() {
+			if ($(this).val() === quizQuestions[1].correctAnswer) {
+				game.correct++;
+			} else {
+				game.incorrect++;
+			}
+		});
+
+		$.each($("input[name='question-2']:checked"), function() {
+			if ($(this).val() === quizQuestions[2].correctAnswer) {
+				game.correct++;
+			} else {
+				game.incorrect++;
+			}
+		});
+
+		$.each($("input[name='question-3']:checked"), function() {
+			if ($(this).val() === quizQuestions[3].correctAnswer) {
+				game.correct++;
+			} else {
+				game.incorrect++;
+			}
+		});
+
+		$.each($("input[name='question-4']:checked"), function() {
+			if ($(this).val() === quizQuestions[4].correctAnswer) {
+				game.correct++;
+			} else {
+				game.incorrect++;
+			}
+		});
+
+		this.result();
+	},
+
+	result: function() {
+		clearInterval(timer);
+		$("#sub-wrapper h2").remove();
+		panel.html("<h2>All Done!</h2>");
+		panel.append("<h3>Correct Answers: " + this.correct + "</h3>");
+		panel.append("<h3>Incorrect Answers: " + this.incorrect + "</h3>");
+		panel.append("<h3>Unanswered Questions: " + (quizQuestions.length - (this.incorrect + this.correct)) + "</h3>");
+
+	}
+};
+
+$(document).on("click", "#start", function(){
+	game.start();
+});
+
+$(document).on("click", "#done", function(){
+	game.done();
 });
